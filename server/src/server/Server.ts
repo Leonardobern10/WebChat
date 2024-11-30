@@ -7,7 +7,8 @@ import { Message } from '../model/Message';
 import { HttpMethod } from '../contants/Methods';
 import { Routes } from '../contants/PathRoutes';
 import { SocketMethods } from '../contants/Socket';
-import { Console } from '../contants/Info';
+import { Messages } from '../contants/Messages';
+import { UrlClient } from '../contants/UrlClient';
 
 export class ServerApp {
     private app: Application;
@@ -22,22 +23,22 @@ export class ServerApp {
         this.server = createServer(this.app);
         this.io = new Server(this.server, {
             cors: {
-                origin: HttpMethod.ALLOWED_ORIGIN,
+                origin: UrlClient.ALLOWED_ORIGIN,
                 methods: HttpMethod.ALLOWED_METHODS,
             },
         });
         this.port = port;
         this.connection();
         this.service = new MessageService();
-        this.getStatus();
+        this.registerStatisRoute();
     }
 
-    async getStatus() {
+    async registerStatisRoute() {
         this.app.use(Routes.GET_STATUS, routerStatus);
     }
 
-    private async saveMessage(message: Message) {
-        await this.service.saveMessage(
+    private async saveMessageToDatabase(message: Message) {
+        await this.service.saveMessageToDatabase(
             message.getUser(),
             message.getMessage(),
             message.getTimestamp(),
@@ -46,25 +47,25 @@ export class ServerApp {
 
     async listen() {
         this.server.listen(this.port, () => {
-            console.log(`${Console.SUCESS.SERVER_RUNNING}${this.port}/`);
+            console.log(`${Messages.SERVER_RUNNING}${this.port}/`);
         });
     }
 
     async connection() {
         this.io.on(SocketMethods.INIT_CONNECTION, async (socket) => {
-            console.log(`${Console.SUCESS.USER_CONNECTED} ${socket.id}`);
+            console.log(`${Messages.USER_CONNECTED} ${socket.id}`);
 
             try {
                 const history = await this.getHistory();
                 // Obtem o histórico diretamente
                 socket.emit(SocketMethods.HISTORY_MESSAGES, history); // Envia o histórico para o cliente
             } catch (error) {
-                console.error(Console.ALERT.ERROR_GET_HISTORY, error);
+                console.error(Messages.ERROR_GET_HISTORY, error);
             }
 
             socket.on(SocketMethods.SET_NAME_FOR_USER, (username: any) => {
                 console.log(
-                    `${Console.SUCESS.USER_RECEIVED_USERNAME} ${socket.id}: ${username}`,
+                    `${Messages.USER_RECEIVED_USERNAME} ${socket.id}: ${username}`,
                 );
                 socket.data.username = username;
             });
@@ -73,7 +74,7 @@ export class ServerApp {
                 SocketMethods.PUBLIC_MESSAGE_FOR_SERVER,
                 (message: string) => {
                     console.log(
-                        `${Console.SUCESS.MESSAGE_RECEIVED_TO_USER} ${socket.id}: ${message}`,
+                        `${Messages.MESSAGE_RECEIVED_TO_USER} ${socket.id}: ${message}`,
                     );
                     const username = socket.data.username || socket.id;
                     // Instanciando o objeto Message
@@ -90,7 +91,7 @@ export class ServerApp {
                     );
 
                     // Salva no banco de dados
-                    this.saveMessage(newMessage);
+                    this.saveMessageToDatabase(newMessage);
                 },
             );
         });
@@ -101,7 +102,7 @@ export class ServerApp {
             const rows = await this.service.getAllMessages();
             return rows; // Retorna as mensagens como um array
         } catch (error) {
-            console.error(Console.ALERT.ERROR_GET_HISTORY, error);
+            console.error(Messages.ERROR_GET_HISTORY, error);
             throw error;
         }
     }

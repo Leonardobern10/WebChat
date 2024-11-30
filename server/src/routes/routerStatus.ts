@@ -1,18 +1,18 @@
 import { Request, Response, Router } from 'express';
 import { Routes } from '../contants/PathRoutes';
-import { Console } from '../contants/Info';
-import { HttpMethod } from '../contants/Methods';
+import { HttpStatusCodes } from '../contants/HttpStatusCodes';
+import { Messages } from '../contants/Messages';
 
 const routerStatus = Router();
 
 routerStatus.get(Routes.GET_HOME, (req: Request, res: Response) => {
     try {
-        res.status(HttpMethod.SUCESS).json({
-            message: Console.SUCESS.ROUTES_OK,
+        res.status(HttpStatusCodes.OK).json({
+            message: Messages.ROUTE_OK,
         });
     } catch (error) {
-        res.status(HttpMethod.BAD_REQUEST).json({
-            message: `${Console.ALERT.ERROR_BAD_REQUEST} ${error}`,
+        res.status(HttpStatusCodes.BAD_REQUEST).json({
+            message: `${Messages.ERROR_GET_HISTORY} ${error}`,
         });
         console.log(error);
     }

@@ -7,9 +7,17 @@ export class MessageService {
         this.repository = new Repository();
     }
 
-    async saveMessage(user: string, message: string, timestamp: Date) {
+    async saveMessageToDatabase(
+        user: string,
+        message: string,
+        timestamp: Date,
+    ) {
         try {
-            await this.repository.saveMessage(user, message, timestamp);
+            await this.repository.saveMessageToDatabase(
+                user,
+                message,
+                timestamp,
+            );
         } catch (error) {
             throw error;
         }

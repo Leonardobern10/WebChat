@@ -1,5 +1,5 @@
 import { pool } from '../config/database';
-import { Console } from '../contants/Info';
+import { Messages } from '../contants/Messages';
 import { Query } from '../contants/Query';
 
 export class Repository {
@@ -9,14 +9,18 @@ export class Repository {
         this.connection = pool;
     }
 
-    async saveMessage(user: string, message: string, timestamp: Date) {
+    async saveMessageToDatabase(
+        user: string,
+        message: string,
+        timestamp: Date,
+    ) {
         try {
-            this.connection.query(Query.INSERT_MSG_ON_DB, [
+            await this.connection.query(Query.INSERT_MSG_ON_DB, [
                 user,
                 message,
                 timestamp,
             ]);
-            console.log(Console.SUCESS.SAVE_MESSAGE_SUCCESS);
+            console.log(Messages.SAVE_MESSAGE_SUCCESS);
         } catch (error) {
             console.log(error);
             throw error;
