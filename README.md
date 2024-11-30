@@ -2,6 +2,13 @@
 
 Este projeto implementa um chat em tempo real utilizando **WebSockets** para a comunicação entre clientes e servidor. Ele permite que os usuários enviem e recebam mensagens instantaneamente, com uma interface simples e funcional.
 
+## Imagens
+<div style="text-align:center;">
+  <img src="images/Captura%20de%20tela%202024-11-30%20164213.png" width="300" height="250"/>
+  <img src="images/Captura%20de%20tela%202024-11-30%20164322.png" width="300" height="250"/>
+  <img src="images/Captura%20de%20tela%202024-11-30%20164340.png" width="300" height="250"/>
+</div>
+
 ## Funcionalidades
 
 - **Envio e recebimento de mensagens em tempo real**: As mensagens são enviadas para o servidor e distribuídas para todos os clientes conectados de forma instantânea.
